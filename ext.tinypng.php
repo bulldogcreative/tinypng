@@ -45,9 +45,9 @@ class Tinypng_ext {
             return false;
         }
 
-        if($current < "0.1.0")
+        if($current < "1.0.0")
         {
-            // Update to version 0.1.0
+            // Update to version 1.0.0
         }
 
         ee()->db->where("class", __CLASS__);
