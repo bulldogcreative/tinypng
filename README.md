@@ -10,8 +10,8 @@ Visit [TinyPNG](https://tinypng.com/) for more information.
 4. Upload the files into the new directory
 5. Login to ExpressionEngine
 6. Click **Add-Ons** -> **Extensions**
-7. Click **Install** on the Tinypng row
-8. Click **Settings** on the Tinypng row
+7. Click **Install** on the TinyPNG row
+8. Click **Settings** on the TinyPNG row
 9. Enter your **API key** and click **Submit**
 10. You're done
 
