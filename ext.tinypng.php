@@ -3,16 +3,16 @@
  * Sends the image to tinypng.com to make the file size smaller
  *
  * @version 1.0.0
- * @author Levi Durfee <levi.durfee@gmail.com>
+ * @author Levi Durfee <ldurfee@bulldogcreative.com>
  *
  */
 class Tinypng_ext {
 
-    var $name = "Tinypng";
+    var $name = "TinyPNG";
     var $version = "1.0.0";
     var $description = "https://tinypng.com make your images smaller";
     var $settings_exist = "y";
-    var $docs_url = "https://www.bulldogcreative.com/";
+    var $docs_url = "https://bitbucket.org/bulldogcreative/tinypng/overview";
 
     var $apiUrl = "https://api.tinypng.com/shrink";
 
