@@ -1,4 +1,4 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 /**
  * Sends the image to tinypng.com to make the file size smaller
  *
