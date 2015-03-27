@@ -9,7 +9,7 @@
 class Tinypng_ext {
 
     var $name = "TinyPNG";
-    var $version = "1.0.0";
+    var $version = "1.0.1";
     var $description = "https://tinypng.com make your images smaller";
     var $settings_exist = "y";
     var $docs_url = "https://bitbucket.org/bulldogcreative/tinypng/overview";
