@@ -95,7 +95,7 @@ class Tinypng_ext {
         {
             ee()->db->insert("file_dimensions",
                 array(
-                "site_id"            => 1,
+                "site_id"            => $data["site_id"],
                 "upload_location_id" => $data["upload_location_id"],
                 "title"              => "original",
                 "short_name"         => "original",
