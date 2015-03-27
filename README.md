@@ -31,3 +31,23 @@ To use the original image.
     {exp:channel:entries channel="pages" limit="1"}
         <img alt="{title}" src="{image:original}" />
     {/exp:channel:entries}
+
+## Change Log
+
+### Version 1.0.2
+
+March 27th, 2015
+
+Bug Fixes:
+
+* EE was showing the filesize of the original image.
+
+General changes:
+
+* Site ID was set to one. It now uses $data["site_id"] to get the site id.
+
+### Version 1.0.0 
+
+March 24, 2015
+
+Initial release
