@@ -9,7 +9,7 @@
 class Tinypng_ext {
 
     var $name = "TinyPNG";
-    var $version = "1.0.1";
+    var $version = "1.0.2";
     var $description = "https://tinypng.com make your images smaller";
     var $settings_exist = "y";
     var $docs_url = "https://bitbucket.org/bulldogcreative/tinypng/overview";
@@ -122,6 +122,20 @@ class Tinypng_ext {
         ));
 
         $response = curl_exec($request);
+
+        $rs = explode("\r\n", $response);
+        for($x=0;$x<count($rs);$x++) {
+            // If last line of response - it contains json
+            if(substr($rs[$x], 2, 5) === "input") {
+                $newData = json_decode($rs[$x], true);
+                $data["file_size"] = $newData["output"]["size"];
+                ee()->db->update("files",
+                    array("file_size" => $data["file_size"]),
+                    array("title" => $data["title"])
+                    );
+            }
+        }
+
         if (curl_getinfo($request, CURLINFO_HTTP_CODE) === 201) {
           /* Compression was successful, retrieve output from Location header. */
           $headers = substr($response, 0, curl_getinfo($request, CURLINFO_HEADER_SIZE));
