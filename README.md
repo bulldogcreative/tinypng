@@ -42,7 +42,7 @@ Bug Fixes:
 
 * EE was showing the filesize of the original image.
 
-General changes:
+General Changes:
 
 * Site ID was set to one. It now uses $data["site_id"] to get the site id.
 
