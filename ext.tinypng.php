@@ -2,7 +2,7 @@
 /**
  * Sends the image to tinypng.com to make the file size smaller
  *
- * @version 1.0.0
+ * @version 1.0.2
  * @author Levi Durfee <ldurfee@bulldogcreative.com>
  *
  */
