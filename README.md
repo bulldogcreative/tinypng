@@ -26,11 +26,15 @@ To use the TinyPNG version of the image.
         <img alt="{title}" src="{image}" />
     {/exp:channel:entries}
 
+[View the TinyPNG version](http://levi.bulldogcreative.com/assets/images/_thumb/helicopter.png)
+
 To use the original image.
 
     {exp:channel:entries channel="pages" limit="1"}
         <img alt="{title}" src="{image:original}" />
     {/exp:channel:entries}
+
+[View the original version](http://levi.bulldogcreative.com/assets/images/_thumb/helicopter.png)
 
 ## Change Log
 
