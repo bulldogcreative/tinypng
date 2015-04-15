@@ -38,6 +38,14 @@ To use the original image.
 
 ## Change Log
 
+### Version 1.0.3
+
+April 15th, 2015
+
+Bug Fixes:
+
+* EE was showing an error when uploading a file that already existed.
+
 ### Version 1.0.2
 
 March 27th, 2015
@@ -50,7 +58,7 @@ General Changes:
 
 * Site ID was set to one. It now uses $data["site_id"] to get the site id.
 
-### Version 1.0.0 
+### Version 1.0.0
 
 March 24, 2015
 

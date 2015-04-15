@@ -2,14 +2,14 @@
 /**
  * Sends the image to tinypng.com to make the file size smaller
  *
- * @version 1.0.2
+ * @version 1.0.3
  * @author Levi Durfee <ldurfee@bulldogcreative.com>
  *
  */
 class Tinypng_ext {
 
     var $name = "TinyPNG";
-    var $version = "1.0.2";
+    var $version = "1.0.3";
     var $description = "https://tinypng.com make your images smaller";
     var $settings_exist = "y";
     var $docs_url = "https://bitbucket.org/bulldogcreative/tinypng/overview";
@@ -62,6 +62,9 @@ class Tinypng_ext {
 
     function tinyThis($file_id, $data)
     {
+        if(!isset($data["rel_path"])) {
+            return false;
+        }
         if(!exif_imagetype($data["rel_path"]))
         {
             return false;
