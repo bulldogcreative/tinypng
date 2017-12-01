@@ -33,4 +33,14 @@ class Tinypng_ext
 
         ee()->db->insert('extensions', $data);
     }
+
+    public function update_extension($current = '')
+    {
+        if($current == '' OR $current == $this->version) {
+            return FALSE;
+        }
+
+        ee()->db->where('class', __CLASS__);
+        ee()->db->update('extensions', array('version' => $this->version));
+    }
 }
