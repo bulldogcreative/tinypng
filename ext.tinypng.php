@@ -43,4 +43,10 @@ class Tinypng_ext
         ee()->db->where('class', __CLASS__);
         ee()->db->update('extensions', array('version' => $this->version));
     }
+
+    public function disable_extension()
+    {
+        ee()->db->where('class', __CLASS__);
+        ee()->db->delete('extensions');
+    }
 }
