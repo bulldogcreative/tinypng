@@ -6,6 +6,6 @@ return array(
     'name'           => 'TinyPNG',
     'description'    => 'Optimize your images for performance!',
     'version'        => '2.0.0',
-    'namespace'      => 'bulldog\TinyPNG',
+    'namespace'      => 'bulldog\Tinypng',
     'settings_exist' => TRUE,
 );
