@@ -49,4 +49,29 @@ class Tinypng_ext
         ee()->db->where('class', __CLASS__);
         ee()->db->delete('extensions');
     }
+
+    public function settings()
+    {
+        $settings = array();
+        $settings['api_key'] = array('i', '', '');
+
+        return $settings;
+    }
+
+    public function save_settings()
+    {
+        if(empty($_POST)) {
+            show_error(lang('unauthorized_access'));
+        }
+
+        ee()->lang->loadfile('tinypng');
+
+        ee('CP/Alert')->makeInline('tinypng-save')
+            ->asSuccess()
+            ->withTitle(lang('message_success'))
+            ->addToBody(lang('preferences_updated'))
+            ->defer();
+
+        ee()->functions->redirect(ee('CP/URL')->make('addons/settings/tinypng'));
+    }
 }
