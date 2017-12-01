@@ -77,6 +77,31 @@ class Tinypng_ext
 
     public function tiny($file_id, $data)
     {
-        
+        // These aren't the files you're looking for, move along.
+        if(!isset($data['rel_path']) OR !exif_imagetype($data['rel_path'])) {
+            //return false;
+        }
+
+        echo "<pre>"; var_dump($this->getPath($data['upload_location_id'])); die();
+    }
+
+    private function getPath($uploadLocationId)
+    {
+        $path = ee()->db->select('server_path')
+            ->where('id', $uploadLocationId)
+            ->limit(1)
+            ->get('exp_upload_prefs');
+
+        return $path;
+    }
+
+    private function sendImage()
+    {
+
+    }
+
+    private function downloadImage()
+    {
+
     }
 }
