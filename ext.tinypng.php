@@ -18,7 +18,7 @@ class Tinypng_ext
     public function activate_extension()
     {
         $this->settings = array(
-            'api_key' = '',
+            'api_key' => '',
         );
 
         $data = array(
