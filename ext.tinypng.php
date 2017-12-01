@@ -74,4 +74,9 @@ class Tinypng_ext
 
         ee()->functions->redirect(ee('CP/URL')->make('addons/settings/tinypng'));
     }
+
+    public function tiny($file_id, $data)
+    {
+        
+    }
 }
