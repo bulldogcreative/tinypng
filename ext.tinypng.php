@@ -80,7 +80,7 @@ class Tinypng_ext
      */
     public function tiny($file_id, $data)
     {
-        if(strpose($data['mime_type'], 'image') === false) {
+        if(strpos($data['mime_type'], 'image') === false) {
             return false;
         }
 
@@ -88,6 +88,7 @@ class Tinypng_ext
         $this->makeOriginalPath($path);
 
         $this->createUploadLocation('original', $data);
+        copy($path . $data['file_name'], $path . '_original/' . $data['file_name']);
     }
 
     /**
