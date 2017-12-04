@@ -1,199 +1,214 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
-/**
- * Sends the image to tinypng.com to make the file size smaller
- *
- * @version 1.0.3
- * @author Levi Durfee <ldurfee@bulldogcreative.com>
- *
- */
-class Tinypng_ext {
+<?php
 
-    var $name = "TinyPNG";
-    var $version = "1.0.3";
-    var $description = "https://tinypng.com make your images smaller";
-    var $settings_exist = "y";
-    var $docs_url = "https://bitbucket.org/bulldogcreative/tinypng/overview";
+class Tinypng_ext
+{
+    public $name = 'TinyPNG';
+    public $version = '2.0.0';
+    public $description = 'Optimize your images for performance!';
+    public $settings_exist = 'y';
+    public $docs_url = 'https://github.com/BulldogCreative/tinypng/';
 
-    var $apiUrl = "https://api.tinypng.com/shrink";
+    public $settings = array();
 
-    var $settings = array();
-
-    function __construct($settings = "")
+    public function __construct($settings = array())
     {
         $this->settings = $settings;
     }
 
-    function activate_extension()
+    public function activate_extension()
     {
+        $this->settings = array(
+            'api_key' => '',
+        );
+
         $data = array(
-            "class"     => __CLASS__,
-            "method"    => "tinyThis",
-            "hook"      => "file_after_save",
-            "settings"  => "",
-            "priority"  => 10,
-            "version"   => $this->version,
-            "enabled"   => "y",
-            );
+            'class'    => __CLASS__,
+            'method'   => 'tiny',
+            'hook'     => 'file_after_save',
+            'settings' => serialize($this->settings),
+            'priority' => 10,
+            'version'  => $this->version,
+            'enabled'  => 'y',
+        );
 
-        ee()->db->insert("extensions", $data);
+        ee()->db->insert('extensions', $data);
     }
 
-    function update_extension($current = "")
+    public function update_extension($current = '')
     {
-        if($current == "" OR $current == $this->version)
-        {
+        if($current == '' OR $current == $this->version) {
+            return FALSE;
+        }
+
+        ee()->db->where('class', __CLASS__);
+        ee()->db->update('extensions', array('version' => $this->version));
+    }
+
+    public function disable_extension()
+    {
+        ee()->db->where('class', __CLASS__);
+        ee()->db->delete('extensions');
+    }
+
+    public function settings()
+    {
+        $settings = array();
+        $settings['api_key'] = array('i', '', '');
+
+        return $settings;
+    }
+
+    public function save_settings()
+    {
+        if(empty($_POST)) {
+            show_error(lang('unauthorized_access'));
+        }
+
+        ee()->lang->loadfile('tinypng');
+
+        ee('CP/Alert')->makeInline('tinypng-save')
+            ->asSuccess()
+            ->withTitle(lang('message_success'))
+            ->addToBody(lang('preferences_updated'))
+            ->defer();
+
+        ee()->functions->redirect(ee('CP/URL')->make('addons/settings/tinypng'));
+    }
+
+    /**
+     * Method that is called by the hook to run TinyPNG on the image
+     */
+    public function tiny($file_id, $data)
+    {
+        if(strpos($data['mime_type'], 'image') === false) {
             return false;
         }
 
-        if($current < "1.0.0")
-        {
-            // Update to version 1.0.0
-        }
+        $path = $this->getPath($data['upload_location_id']);
+        $this->makeOriginalPath($path);
 
-        ee()->db->where("class", __CLASS__);
-        ee()->db->update("extensions", array("version" => $this->version));
+        $this->createUploadLocation('original', $data);
+        copy($path . $data['file_name'], $path . '_original/' . $data['file_name']);
+
+        $uploadResponse = $this->sendImage($path . $data['file_name']);
+        $downloadResponse = $this->downloadImage($uploadResponse['response'], $uploadResponse['request'], $path . $data['file_name']);
+
+        if($downloadResponse) {
+            $this->updateFileSize($uploadResponse['response'], $data);
+        }
     }
 
-    function disable_extension()
+    /**
+     * Create an upload location for original files if it doesn't exist
+     */
+    public function createUploadLocation($name, $data)
     {
-        ee()->db->where("class", __CLASS__);
-        ee()->db->delete("extensions");
-    }
-
-    function tinyThis($file_id, $data)
-    {
-        if(!isset($data["rel_path"])) {
-            return false;
-        }
-        if(!exif_imagetype($data["rel_path"]))
-        {
-            return false;
-        }
-        ee()->db->select("server_path");
-        ee()->db->from("exp_upload_prefs");
-        ee()->db->where("id", $data["upload_location_id"]);
-        $path = ee()->db->get();
-        if($path->num_rows())
-        {
-            foreach($path->result_array() as $row)
-            {
-                $local_path = $row["server_path"];
-            }
-        }
-        $panda_path = $local_path . "_original";
-        if(!file_exists($panda_path))
-        {
-            mkdir($panda_path, 0777, true);
-        }
-
-        $results = ee()->db->select("upload_location_id, title")
-        ->from("file_dimensions")
-        ->where(array(
-            "upload_location_id" => $data["upload_location_id"],
-            "title"              => "original",
+        $results = ee()->db->select('upload_location_id, title')
+            ->from('file_dimensions')
+            ->where(array(
+                'upload_location_id' => $data['upload_location_id'],
+                'title'              => $name,
             ))
-        ->get();
+            ->get();
 
-        if($results->num_rows() == 0)
-        {
-            ee()->db->insert("file_dimensions",
-                array(
-                "site_id"            => $data["site_id"],
-                "upload_location_id" => $data["upload_location_id"],
-                "title"              => "original",
-                "short_name"         => "original",
-                "resize_type"        => "none",
-                ));
+        if($results->num_rows() == 0) {
+            ee()->db->insert('file_dimensions', array(
+                'site_id'            => $data['site_id'],
+                'upload_location_id' => $data['upload_location_id'],
+                'title'              => $name,
+                'short_name'         => $name,
+                'resize_type'        => 'none',
+            ));
         }
+    }
 
-        $input = $data["rel_path"];
-        copy($input, $panda_path . "/" . $data["file_name"]);
-        $output = $data["rel_path"];
+    /**
+     * getPath returns the folder path for the upload directory
+     */
+    private function getPath($uploadLocationId)
+    {
+        $path = ee()->db->select('server_path')
+            ->where('id', $uploadLocationId)
+            ->limit(1)
+            ->get('exp_upload_prefs');
 
+        return $path->row('server_path');
+    }
+
+    /**
+     * If the folder for the original files doesn't exist, create it
+     */
+    private function makeOriginalPath($path)
+    {
+        if(!file_exists($path . '_original')) {
+            mkdir($path . '_original', 0777, true);
+        }
+    }
+
+    /**
+     * Send the image to TinyPNG to get compressed
+     */
+    private function sendImage($file)
+    {
         $request = curl_init();
         curl_setopt_array($request, array(
-          CURLOPT_URL            => "https://api.tinypng.com/shrink",
-          CURLOPT_USERPWD        => "api:" . $this->settings["apiKey"],
-          CURLOPT_POSTFIELDS     => file_get_contents($input),
-          CURLOPT_BINARYTRANSFER => true,
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_HEADER         => true,
-          /* Uncomment below if you have trouble validating our SSL certificate.
-             Download cacert.pem from: http://curl.haxx.se/ca/cacert.pem */
-          // CURLOPT_CAINFO => __DIR__ . "/cacert.pem",
-          CURLOPT_SSL_VERIFYPEER => true
+            CURLOPT_URL            => 'https://api.tinypng.com/shrink',
+            CURLOPT_USERPWD        => 'api  :' . $this->settings['api_key'],
+            CURLOPT_POSTFIELDS     => file_get_contents($file),
+            CURLOPT_BINARYTRANSFER => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER         => true,
+            CURLOPT_SSL_VERIFYPEER => true
         ));
 
-        $response = curl_exec($request);
+        return ['response' => curl_exec($request), 'request' => $request];
+    }
 
-        $rs = explode("\r\n", $response);
-        for($x=0;$x<count($rs);$x++) {
+    /**
+     * Download the compressed image from TinyPNG
+     */
+    private function downloadImage($response, $request, $file)
+    {
+        if (curl_getinfo($request, CURLINFO_HTTP_CODE) === 201) {
+            /* Compression was successful, retrieve output from Location header. */
+            $headers = substr($response, 0, curl_getinfo($request, CURLINFO_HEADER_SIZE));
+            foreach (explode("\r\n", $headers) as $header) {
+                if (substr($header, 0, 10) === "Location: ") {
+                    $request = curl_init();
+                    curl_setopt_array($request, array(
+                        CURLOPT_URL            => substr($header, 10),
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_SSL_VERIFYPEER => true
+                    ));
+                    file_put_contents($file, curl_exec($request));
+                }
+            }
+        } else {
+            print(curl_error($request));
+            print("Compression failed");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Update the size of the file in the database after it's compressed
+     */
+    private function updateFileSize($response, $data)
+    {
+        $responseArray = explode("\r\n", $response);
+        for($x=0;$x<count($responseArray);$x++) {
             // If last line of response - it contains json
-            if(substr($rs[$x], 2, 5) === "input") {
-                $newData = json_decode($rs[$x], true);
+            if(substr($responseArray[$x], 2, 5) === "input") {
+                $newData = json_decode($responseArray[$x], true);
                 $data["file_size"] = $newData["output"]["size"];
                 ee()->db->update("files",
                     array("file_size" => $data["file_size"]),
                     array("title" => $data["title"])
-                    );
+                );
             }
         }
-
-        if (curl_getinfo($request, CURLINFO_HTTP_CODE) === 201) {
-          /* Compression was successful, retrieve output from Location header. */
-          $headers = substr($response, 0, curl_getinfo($request, CURLINFO_HEADER_SIZE));
-          foreach (explode("\r\n", $headers) as $header) {
-            if (substr($header, 0, 10) === "Location: ") {
-              $request = curl_init();
-              curl_setopt_array($request, array(
-                CURLOPT_URL => substr($header, 10),
-                CURLOPT_RETURNTRANSFER => true,
-                /* Uncomment below if you have trouble validating our SSL certificate. */
-                // CURLOPT_CAINFO => __DIR__ . "/cacert.pem",
-                CURLOPT_SSL_VERIFYPEER => true
-              ));
-              file_put_contents($output, curl_exec($request));
-            }
-          }
-        } else {
-            print(curl_error($request));
-            /* Something went wrong! */
-            print("Compression failed");
-        }
-    }
-
-    function settings_form($current)
-    {
-        ee()->load->helper("form");
-        ee()->load->library("table");
-
-        $vars = array();
-
-        $apiKey = (isset($current["apiKey"])) ? $current["apiKey"] : "";
-
-        $vars["settings"] = array(
-            "apiKey" => form_input("apiKey", $apiKey),
-            );
-        return ee()->load->view("index", $vars, true);
-    }
-
-    function save_settings()
-    {
-        if(empty($_POST))
-        {
-            show_error(lang("unauthorized_access"));
-        }
-
-        unset($_POST["submit"]);
-
-        ee()->lang->loadfile("tinypng");
-
-        ee()->db->where("class", __CLASS__);
-        ee()->db->update("extensions", array("settings" => serialize($_POST)));
-
-        ee()->session->set_flashdata(
-            "message_success",
-            lang("preferences_updated")
-        );
     }
 }

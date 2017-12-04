@@ -5,14 +5,14 @@ Visit [TinyPNG](https://tinypng.com/) for more information.
 ## Installation
 
 1. [Sign up](https://tinypng.com/developers) for the Developer API and get your API key
-2. [Download](https://bitbucket.org/bulldogcreative/tinypng/downloads) the zip file
+2. [Download](https://github.com/BulldogCreative/tinypng/releases) the zip file
 3. Create the directory **tinypng** in /system/expressionengine/third_party/
 4. Upload the files into the new directory
 5. Login to ExpressionEngine
-6. Click **Add-Ons** -> **Extensions**
+6. Click **Developers** -> **Add-Ons**
 7. Click **Install** on the TinyPNG row
 8. Click **Settings** on the TinyPNG row
-9. Enter your **API key** and click **Submit**
+9. Enter your **TingPNG API Key** and click **Save Settings**
 10. You're done
 
 Any image you upload will be made smaller with TinyPNG. Your original file will be stored
@@ -26,7 +26,9 @@ To use the TinyPNG version of the image.
         <img alt="{title}" src="{image}" />
     {/exp:channel:entries}
 
-![TinyPNG version](https://levi.bulldogcreative.com/assets/images/helicopter.png)
+The tinified version of the image below is 206KB.
+
+![TinyPNG version](samples/after.png)
 
 To use the original image.
 
@@ -34,9 +36,17 @@ To use the original image.
         <img alt="{title}" src="{image:original}" />
     {/exp:channel:entries}
 
-![Original version](https://levi.bulldogcreative.com/assets/images/_original/helicopter.png)
+The original image is 1.6MB.
+
+![Original version](samples/before.png)
 
 ## Change Log
+
+### Version 2.0.0
+
+December 4th, 2017
+
+Added support for ExpressionEngine 4.0.
 
 ### Version 1.0.3
 
@@ -63,3 +73,9 @@ General Changes:
 March 24, 2015
 
 Initial release
+
+## photo credit
+
+Photo by [Levi Bare](https://unsplash.com/photos/xCfHL21VpDk?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+on
+[Unsplash](https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText).
