@@ -81,7 +81,8 @@ class Tinypng_ext
             return false;
         }
 
-        $path = $this->getPath($data['upload_location_id'])
+        $path = $this->getPath($data['upload_location_id']);
+        $this->makeOriginalPath($path);
     }
 
     private function getPath($uploadLocationId)
@@ -92,6 +93,13 @@ class Tinypng_ext
             ->get('exp_upload_prefs');
 
         return $path->row('server_path');
+    }
+
+    private function makeOriginalPath($path)
+    {
+        if(!file_exists($path . '_original')) {
+            mkdir($path . '_original', 0777, true);
+        }
     }
 
     private function sendImage()
