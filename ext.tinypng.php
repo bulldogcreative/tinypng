@@ -86,6 +86,32 @@ class Tinypng_ext
 
         $path = $this->getPath($data['upload_location_id']);
         $this->makeOriginalPath($path);
+
+        $this->createUploadLocation('original', $data);
+    }
+
+    /**
+     * Create an upload location for original files if it doesn't exist
+     */
+    public function createUploadLocation($name, $data)
+    {
+        $results = ee()->db->select('upload_location_id, title')
+            ->from('file_dimensions')
+            ->where(array(
+                'upload_location_id' => $data['upload_location_id'],
+                'title'              => $name,
+            ))
+            ->get();
+
+        if($results->num_rows() == 0) {
+            ee()->db->insert('file_dimensions', array(
+                'site_id'            => $data['site_id'],
+                'upload_location_id' => $data['upload_location_id'],
+                'title'              => $name,
+                'short_name'         => $name,
+                'resize_type'        => 'none',
+            ));
+        }
     }
 
     /**
