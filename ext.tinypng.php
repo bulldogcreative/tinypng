@@ -91,7 +91,11 @@ class Tinypng_ext
         copy($path . $data['file_name'], $path . '_original/' . $data['file_name']);
 
         $uploadResponse = $this->sendImage($path . $data['file_name']);
-        $this->downloadImage($uploadResponse['request'], $path . $data['file_name']);
+        $downloadResponse = $this->downloadImage($uploadResponse['request'], $path . $data['file_name']);
+
+        if($downloadResponse) {
+            $this->updateFileSize($uploadResponse, $data);
+        }
     }
 
     /**
@@ -176,11 +180,26 @@ class Tinypng_ext
         } else {
             print(curl_error($request));
             print("Compression failed");
+
+            return false;
         }
+
+        return true;
     }
 
-    private function updateFileSize($fileId)
+    private function updateFileSize($response, $data)
     {
-
+        $responseArray = explode("\r\n", $response);
+        for($x=0;$x<count($responseArray);$x++) {
+            // If last line of response - it contains json
+            if(substr($responseArray[$x], 2, 5) === "input") {
+                $newData = json_decode($responseArray[$x], true);
+                $data["file_size"] = $newData["output"]["size"];
+                ee()->db->update("files",
+                    array("file_size" => $data["file_size"]),
+                    array("title" => $data["title"])
+                );
+            }
+        }
     }
 }
