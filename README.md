@@ -42,7 +42,7 @@ The original image is 1.6MB.
 
 ## Change Log
 
-## Version 2.0.0
+### Version 2.0.0
 
 December 4th, 2017
 
