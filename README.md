@@ -26,6 +26,8 @@ To use the TinyPNG version of the image.
         <img alt="{title}" src="{image}" />
     {/exp:channel:entries}
 
+The tinified version of the image below is 206KB.
+
 ![TinyPNG version](samples/after.png)
 
 To use the original image.
@@ -33,6 +35,8 @@ To use the original image.
     {exp:channel:entries channel="pages" limit="1"}
         <img alt="{title}" src="{image:original}" />
     {/exp:channel:entries}
+
+The original image is 1.6MB.
 
 ![Original version](samples/before.png)
 
