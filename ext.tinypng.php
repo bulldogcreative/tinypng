@@ -145,6 +145,9 @@ class Tinypng_ext
         }
     }
 
+    /**
+     * Send the image to TinyPNG to get compressed
+     */
     private function sendImage($file)
     {
         $request = curl_init();
@@ -161,6 +164,9 @@ class Tinypng_ext
         return ['response' => curl_exec($request), 'request' => $request];
     }
 
+    /**
+     * Download the compressed image from TinyPNG
+     */
     private function downloadImage($response, $request, $file)
     {
         if (curl_getinfo($request, CURLINFO_HTTP_CODE) === 201) {
@@ -187,6 +193,9 @@ class Tinypng_ext
         return true;
     }
 
+    /**
+     * Update the size of the file in the database after it's compressed
+     */
     private function updateFileSize($response, $data)
     {
         $responseArray = explode("\r\n", $response);
