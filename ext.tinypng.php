@@ -91,10 +91,10 @@ class Tinypng_ext
         copy($path . $data['file_name'], $path . '_original/' . $data['file_name']);
 
         $uploadResponse = $this->sendImage($path . $data['file_name']);
-        $downloadResponse = $this->downloadImage($uploadResponse['request'], $path . $data['file_name']);
+        $downloadResponse = $this->downloadImage($uploadResponse['response'], $uploadResponse['request'], $path . $data['file_name']);
 
         if($downloadResponse) {
-            $this->updateFileSize($uploadResponse, $data);
+            $this->updateFileSize($uploadResponse['response'], $data);
         }
     }
 
@@ -149,19 +149,19 @@ class Tinypng_ext
     {
         $request = curl_init();
         curl_setopt_array($request, array(
-            CURLOPT                 => 'https://api.tinypng.com/shrink',
-            CURLOPT_USERPWD         => 'api  :' . $this->settings['api_key'],
-            CURLOPT_POSTFIELDS      => file_get_contents($file),
-            CURLOPT_BINARYTRANSFER  => true,
-            CURLOPT_RETURNTTRANSFER => true,
-            CURLOPT_HEADER          => true,
-            CURLOPT_SSL_VERIFYPEER  => true
+            CURLOPT_URL            => 'https://api.tinypng.com/shrink',
+            CURLOPT_USERPWD        => 'api  :' . $this->settings['api_key'],
+            CURLOPT_POSTFIELDS     => file_get_contents($file),
+            CURLOPT_BINARYTRANSFER => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER         => true,
+            CURLOPT_SSL_VERIFYPEER => true
         ));
 
         return ['response' => curl_exec($request), 'request' => $request];
     }
 
-    private function downloadImage($request, $file)
+    private function downloadImage($response, $request, $file)
     {
         if (curl_getinfo($request, CURLINFO_HTTP_CODE) === 201) {
             /* Compression was successful, retrieve output from Location header. */
