@@ -89,6 +89,9 @@ class Tinypng_ext
 
         $this->createUploadLocation('original', $data);
         copy($path . $data['file_name'], $path . '_original/' . $data['file_name']);
+
+        $uploadResponse = $this->sendImage($path . $data['file_name']);
+        $this->downloadImage($uploadResponse['request'], $path . $data['file_name']);
     }
 
     /**
@@ -138,12 +141,45 @@ class Tinypng_ext
         }
     }
 
-    private function sendImage()
+    private function sendImage($file)
     {
+        $request = curl_init();
+        curl_setopt_array($request, array(
+            CURLOPT                 => 'https://api.tinypng.com/shrink',
+            CURLOPT_USERPWD         => 'api  :' . $this->settings['api_key'],
+            CURLOPT_POSTFIELDS      => file_get_contents($file),
+            CURLOPT_BINARYTRANSFER  => true,
+            CURLOPT_RETURNTTRANSFER => true,
+            CURLOPT_HEADER          => true,
+            CURLOPT_SSL_VERIFYPEER  => true
+        ));
 
+        return ['response' => curl_exec($request), 'request' => $request];
     }
 
-    private function downloadImage()
+    private function downloadImage($request, $file)
+    {
+        if (curl_getinfo($request, CURLINFO_HTTP_CODE) === 201) {
+            /* Compression was successful, retrieve output from Location header. */
+            $headers = substr($response, 0, curl_getinfo($request, CURLINFO_HEADER_SIZE));
+            foreach (explode("\r\n", $headers) as $header) {
+                if (substr($header, 0, 10) === "Location: ") {
+                    $request = curl_init();
+                    curl_setopt_array($request, array(
+                        CURLOPT_URL            => substr($header, 10),
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_SSL_VERIFYPEER => true
+                    ));
+                    file_put_contents($file, curl_exec($request));
+                }
+            }
+        } else {
+            print(curl_error($request));
+            print("Compression failed");
+        }
+    }
+
+    private function updateFileSize($fileId)
     {
 
     }
