@@ -80,6 +80,8 @@ class Tinypng_ext
         if(strpose($data['mime_type'], 'image') === false) {
             return false;
         }
+
+        $path = $this->getPath($data['upload_location_id'])
     }
 
     private function getPath($uploadLocationId)
