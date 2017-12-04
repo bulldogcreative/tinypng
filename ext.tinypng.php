@@ -75,6 +75,9 @@ class Tinypng_ext
         ee()->functions->redirect(ee('CP/URL')->make('addons/settings/tinypng'));
     }
 
+    /**
+     * Method that is called by the hook to run TinyPNG on the image
+     */
     public function tiny($file_id, $data)
     {
         if(strpose($data['mime_type'], 'image') === false) {
@@ -85,6 +88,9 @@ class Tinypng_ext
         $this->makeOriginalPath($path);
     }
 
+    /**
+     * getPath returns the folder path for the upload directory
+     */
     private function getPath($uploadLocationId)
     {
         $path = ee()->db->select('server_path')
@@ -95,6 +101,9 @@ class Tinypng_ext
         return $path->row('server_path');
     }
 
+    /**
+     * If the folder for the original files doesn't exist, create it
+     */
     private function makeOriginalPath($path)
     {
         if(!file_exists($path . '_original')) {
