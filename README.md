@@ -1,5 +1,8 @@
 # TinyPNG ExpressionEngine Add-on
 
+![version 3.0.0](https://img.shields.io/badge/version-3.0.0-blue.svg)
+![supports ExpressionEngine 5.1.3](https://img.shields.io/badge/supports-ExpressionEngine%205.1.3-green.svg)
+
 Visit [TinyPNG](https://tinypng.com/) for more information.
 
 ## Installation
@@ -41,6 +44,17 @@ The original image is 1.6MB.
 ![Original version](samples/before.png)
 
 ## Change Log
+
+### Version 3.0.0
+
+February 5th, 2019
+
+* Added [LICENSE.md](LICENSE.md)
+* Checked support for ExpressionEngine 5.1.3
+
+As far as we can tell it works fine with ExpressionEngine 5.1.3. We are going to
+bump the MAJOR version number like ExpressionEngine did when they re-released ee
+with a new license.
 
 ### Version 2.0.0
 
