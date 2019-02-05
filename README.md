@@ -42,6 +42,17 @@ The original image is 1.6MB.
 
 ## Change Log
 
+### Version 3.0.0
+
+February 5th, 2019
+
+* Added [LICENSE.md](LICENSE.md)
+* Checked support for ExpressionEngine 5.1.3
+
+As far as we can tell it works fine with ExpressionEngine 5.1.3. We are going to
+bump the MAJOR version number like ExpressionEngine did when they re-released ee
+with a new license.
+
 ### Version 2.0.0
 
 December 4th, 2017
