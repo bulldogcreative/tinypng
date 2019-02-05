@@ -1,5 +1,8 @@
 # TinyPNG ExpressionEngine Add-on
 
+![version 3.0.0](https://img.shields.io/badge/version-3.0.0-blue.svg)
+![supports ExpressionEngine 5.1.3](https://img.shields.io/badge/supports-ExpressionEngine%205.1.3-green.svg)
+
 Visit [TinyPNG](https://tinypng.com/) for more information.
 
 ## Installation
