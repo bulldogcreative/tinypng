@@ -132,7 +132,9 @@ class Tinypng_ext
             ->limit(1)
             ->get('exp_upload_prefs');
 
-        return $path->row('server_path');
+        $serverPath = str_replace('{base_path}', ee()->config->item('base_path'), $path->row('server_path'));
+
+        return $serverPath;
     }
 
     /**
